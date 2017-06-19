@@ -1,8 +1,6 @@
 ## Damotorie's CTF World
 <div>
-=============
-[Binary](/blob/master/CTF/Binary/babypwn.md)
--------------
+[Binary](https://github.com/parksjin01/parksjin01.github.com/blob/master/CTF/Binary/babypwn.md)
 </div>
 ### 소개 
 
