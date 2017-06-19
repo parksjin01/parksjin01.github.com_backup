@@ -1,37 +1,12 @@
-## Welcome to GitHub Pages
+## Damotorie's CTF World
 
-You can use the [editor on GitHub](https://github.com/parksjin01/parksjin01.github.com/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+### 소개 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+원래는 ***GIST***에 writeup을 저장했으나 그건 영어로 쓰기로 마음 먹고 시작한 곳이여서 언어의 장벽을 느꼈습니다.  
 
-### Markdown
+뭔가 자세하게 설명하려고 하면 영어 단어, 문법, 숙어등의 지식 부재로 인하여 자세한 설명을 할 수 없었고  
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+***GIST***의 경우에는 웹 블로그 만큼 잘 정리하여 관리하기 힘들다는 생각에 블로그를 시작하려 합니다.
 
-```markdown
-Syntax highlighted code block
+물론 여기서는 한국어로 작성할 예정입니다.
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/parksjin01/parksjin01.github.com/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
