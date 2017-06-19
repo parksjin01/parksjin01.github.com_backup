@@ -1,7 +1,9 @@
 ## Damotorie's CTF World
-======
+<div>
+=============
 [Binary](/blob/master/CTF/Binary/babypwn.md)
-------
+-------------
+</div>
 ### 소개 
 
 원래는 ***GIST***에 writeup을 저장했으나 그건 영어로 쓰기로 마음 먹고 시작한 곳이여서 언어의 장벽을 느꼈습니다.  
