@@ -12,10 +12,10 @@ HTML = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <title>Damotorie's World</title>
-    <link href="./CSS/bootstrap.css" rel="stylesheet">
-    <link href="./CSS/bootstrap-theme.css" rel="stylesheet">
-    <link href="./JS/bootstrap.js" rel="script">
-    <link href="./JS/npm.js" rel="script">
+    <link href="../../CSS/bootstrap.css" rel="stylesheet">
+    <link href="../../CSS/bootstrap-theme.css" rel="stylesheet">
+    <link href="../../JS/bootstrap.js" rel="script">
+    <link href="../../JS/npm.js" rel="script">
     <script>
 
     </script>
@@ -33,7 +33,7 @@ HTML = """<!DOCTYPE html>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="#">Binary</a></li>
+                <li><a href="../../Binary.html">Binary</a></li>
                 <li><a href="#about">Reversing</a></li>
                 <li><a href="#contact">ETC</a></li>
             </ul>

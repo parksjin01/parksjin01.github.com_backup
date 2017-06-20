@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Damotorie's World</title>
-    <link href="./CSS/bootstrap.css" rel="stylesheet">
-    <link href="./CSS/bootstrap-theme.css" rel="stylesheet">
-    <link href="./JS/bootstrap.js" rel="script">
-    <link href="./JS/npm.js" rel="script">
+    <link href="./bootstrap-3.3.7-dist/css/bootstrap.css" rel="stylesheet">
+    <link href="./bootstrap-3.3.7-dist/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="./bootstrap-3.3.7-dist/js/bootstrap.js" rel="script">
+    <link href="./bootstrap-3.3.7-dist/js/npm.js" rel="script">
     <script>
+
     </script>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -33,21 +34,10 @@
 <br>
 <br>
 <br>
-<div class="container col-md-offset-2 col-md-8">    <a href="/CTF/Binary/babymisc.html">
-    <div class="col-md-offset-2 col-md-8"> <h3>Babymisc <small>    Codegate prequals 2017</small></h3>
-        <p>
-            이 문제역시 2017년 코드게이트 예선에 나온 pwn 문제로써 3개의 pwn문제중에는 가장 쉽다는 생각이 들었습니다. 먼저 지난번...
-        </p>
-    </div>
-    </a>
-    <a href="/CTF/Binary/babypwn.html">
-    <div class="col-md-offset-2 col-md-8"> <h3>Babypwn 500<small>    Codegate prequals 2017</small></h3>
-        <p>
-            2017년 Codegate 예선에 등장한 문제로 문제이름처럼 난이도 자체는 어렵지 않다고 생각합니다.
-            먼저 실행파일의 형태와 어떤 보호기법이 적용됬는지 확인해 ...
-        </p>
-    </div>
-    </a>
+<div class="container col-md-offset-2 col-md-8">
+    <div<p><h3>Good</h3></p><p>지금은 포스팅 테스트 시간입니다.
+```포스팅 체크 중입니다```
+`포스트`</p><p></p></div>
 </div>
 </body>
 </html>
