@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Damotorie's World</title>
+    <link href="../CSS/bootstrap.css" rel="stylesheet">
+    <link href="../CSS/bootstrap-theme.css" rel="stylesheet">
+    <link href="../JS/bootstrap.js" rel="script">
+    <link href="../JS/npm.js" rel="script">
+    <script>
+
+    </script>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Damotorie CTF's</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="../Binary.html">Binary</a></li>
+                <li><a href="#about">Reversing</a></li>
+                <li class="active"><a href="#">ETC</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+<br>
+<br>
+<br>
+<div class="container col-md-offset-2 col-md-8">
+    <div><p><h2>Angr</h2> 가이드 북</p><p>이 글은 제가 Angr을 공부하면서 알아본 내용을 적은 글입니다. </p><p>Angr이란 IDA, Ollydbg처럼 분석용 툴, 프레임워크입니다. Angr은 2015년 Defcon에서 처음 발표된 후 Angr을 이용한 취약점이 계속 발견됨에 따라 많은 사람들의 관심을 받았습니다. CTF 같은 경우도 Angr을 사용하면 보다 쉽게 풀수 있는 문제를 출제하고 있는데요, 제가 Angr을 공부하게 된 이유도 바로 CTF 덕(?)입니다. 2017년 Codegate prequal에서 angrybird라는 문제가 출시되었는데 이 문제를 해결하는 writeup중 Angr을 사용한 writeup이 있어서 공부하게 되었네요. 많은 사람들의 관심을 받고 CTF에도 해당 프레임워크를 이용하여 푸는 문제가 자주 등장해서 그런지 이미 한글로 된 자료도 많이 존재하여 공부하기는 쉬운 편이라고 생각합니다.</p><p>먼저 한글로된 자료를 보면 <a href="https://github.com/parksjin01/ctf/blob/master/Useful_Tool/angr.docx">다음과 같은 문서</a>가 있고 <a href="http://bitxflow.synology.me/wordpress/?p=460">블로그</a>도 있습니다. 문서를 먼저 읽고 블로그를 보면 도움이 될것 이라고 생각합니다. 그러나 블로그의 예시 설명이 별로 친절하지 않다고 생각하여 예시는 파이썬 스크립트만 주석을 달아서 다시 올리려고 합니다.</p><p><h4>r100</h4></p><p>
+<pre><code>import angr
+ 
+def main():
+    p = angr.Project("r100", load_options={'auto_load_libs': False}) 
+    //r100이라는 바이너리를 simuvex에 로드 시킵니다.(simuvex는 valgrind에서 사용하는 중간 언어인 vex를 실행시켜주는 모듈)
+    //첫번째 매개변수는 바이너리의 이름이며, 두번째 매개변수는 바이너리를 로드시킬때 선택하는 옵션입니다.
+    ex = p.surveyors.Explorer(find=(0x400844, ), avoid=(0x400855,))
+    //surveyors모듈은 사용하지 말라고 Angr공식 홈페이지에 나와있습니다. 아마 1년전 글이라서 surveyors를 사용한것 같습니다.
+    //find 의 주소값을 찾아갈 수 있도록 하는 프로그램의 경로를 구하는 Explorer클래스의 인스턴스를 만듭니다.
+    ex.run()
+    //인스턴스를 실행시킵니다.
+ 
+    return ex.found[0].state.posix.dumps(0).strip('\0\n')
+    //이제 입력값에 뭐라고 넣어야 <code>0x400844</code>로 갈수 있는지 확인해볼 시간입니다.
+    //found는 stash의 종류로 found, active, avoided등이 있습니다. found는 원하는 주소에 도착한 경로들이 있고
+    //active는 모든 stash의 기본값으로 다른 상태의 stash가 되지 않는다면 stash는 항상 active 상태로 남게되고
+    //avoided는 말그대로 avoid에 들어간 주소값으로 향하는 stash가 들어있습니다.
+    //ex.found[0]은 여러 stash중 <code>0x400844</code>로 들어간 1번째 stash를 선택하란말입니다.
+    //.state의 경우 해당 stash의 상태를 가져오라는 뜻으로 state는 SimState의 형태로 저장됩니다.
+    //SimState에는 레지스터, 메모리, 사용자 입력값, 열린 파일등이 들어있는데 실제 값이 들어 있는 것이 아니라 실제값을 구할수 있는 식이 들어있어 식을 실제 값으로 구하는 과정이 필요합니다. 뒤에 과정이 이에 해당합니다.</code></pre></p><p><code>r200</code>의 경우 <code>r100</code>과 거의 소스코드가 같으므로 설명은 넘어가도록 하겠습니다.</p><p><h4>CSCI-4968-MBE(Modern</h4> Binary Exploitation) Challenge0x00a</p><p><pre><code>import angr
+ 
+FIND_ADDR = 0x08048533
+AVOID_ADDR = 0x08048554
+ 
+def main():
+    proj = angr.Project('crackme0x00a', load_options={"auto_load_libs": False})
+    path_group = proj.factory.path_group()
+    //r100과의 유일한 차이는 path_group인데 Angr 공식홈페이지에서는 Explorer 인스턴스보다 해당 함수의 사용을 권장하고 있습니다.
+    //path_group이 가지는 장점을 아직은 잘 모르겠습니다...
+    path_group.explore(find=FIND_ADDR, avoid=AVOID_ADDR)
+    return path_group.found[0].state.posix.dumps(0).split('\0')[0] </code></pre>
+ </p><p><h4>AIS3</h4> 2015 CRACKME</p><p>이번 바이너리의 경우 위 블로그의 ida 분석 이미지를 보면 알시겠지만 사용자 입력이 파라미터 값으로 넘어갑니다.
+이번 바이너리를 Simuvex가 제대로 실행시키기 위해서는 사용자가 입력했다고 생각되는 파라미터가 필요합니다.
+따라서 이번에는 프로그램을 실행할 때 파라미터를 넘겨서 실행하는것을 보도록 하겠습니다</p><p><pre><code>import angr
+ 
+def main():
+    project = angr.Project("./ais3_crackme", load_options={"auto_load_libs": False})
+    argv1 = angr.claripy.BVS("argv1",100*8)
+    //위 소스코드는 이전에는 볼수 없는 코드였는데요, 이름이 argv1이고 크기가 100바이트인 변수를 simuvex에 만들어 달라는 뜻입니다.
+    //claripy는 simuvex내에 변수, 상수를 만들어주는 모듈입니다. 정확하게는 변수, 상수 값을 가져올수 있는 표현식을 만들어주는 모듈입니다.
+    initial_state = project.factory.path(args=["./crackme1",argv1])
+    //이제 시작 상태를 프로그램명과 아까만든 변수를 넘긴상태로 바꾸고
+ 
+    pg = project.factory.path_group(initial_state)
+    //path_group을 만듭니다.
+ 
+    pg.explore(find=0x400602)
+    found = pg.found[0]
+    solution = found.state.se.any_str(argv1)
+    //위 소스코드역시 이전에는 볼수 없던 코드로써 아까 만든 argv1의 값을 가져오기 위해 들어가는 코드입니다.
+    //se는 solve engine 모듈로써 아까 claripy가 변수를 나타내는 식을 만든다 하였는데 이 se 모듈을 이용해서 식으로 부터 값을 가져 올수 있습니다. 
+    //argv1으로 부터 1개의 문자열을 가져오도록 하는 소스코드인 것입니다.
+    solution = solution[:solution.find("\x00")]
+    return solution
+</code></pre>
+ 
+지금까지 적은것은 매우 대략적인 내용이며 추가적인 내용을 알고 싶으시다면 <a href="http://angr.io">Angr의 공식 도큐먼트</a>를 찾아보시기 바랍니다. 틀린부분이 있다면 매일 보내주세요
+</p></div>
+</div>
+</body>
+</html>
