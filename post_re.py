@@ -81,7 +81,7 @@ with open('./Reversing.html', 'rt') as f:
         index = f.read()
 index = index.split('<div class="container col-md-offset-2 col-md-8">')
 soup = BeautifulSoup.BeautifulSoup(HTML)
-cur_index = INDEX_FORM %(file_name.split('/')[-1].strip('.md')+'.html', soup.findAll('h2')[0].text, soup.findAll('p')[0].text)
+cur_index = INDEX_FORM %(file_name.split('/')[-1].strip('.md')+'.html', soup.findAll('h2')[0].text, soup.findAll('p')[1].text)
 print cur_index
 index[1] = cur_index + index[1]
 index = '<div class="container col-md-offset-2 col-md-8">'.join(index)
