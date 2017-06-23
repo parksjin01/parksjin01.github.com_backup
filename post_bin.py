@@ -16,9 +16,17 @@ HTML = """<!DOCTYPE html>
     <link href="../../CSS/bootstrap-theme.css" rel="stylesheet">
     <script src="../../JS/bootstrap.js" type="text/javascript">
     <script src="../../JS/npm.js" type="text/javascript">
-    <script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    </script>
+  ga('create', 'UA-101495030-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -62,14 +70,14 @@ with open(file_name, 'rt') as f:
 md_file = md_file.split('\n\n')
 html_file = []
 for sentence in md_file:
-	tmp = re.sub(r"""(#{6}) ([\w!@#$%^&*()_\-{}[\]:";'<>?,./|\\=+]*)""", r'<h6>\2</h6>', sentence)
-	tmp = re.sub(r"""(#{5}) ([\w!@#$%^&*()_\-{}[\]:";'<>?,./|\\=+]*)""", r'<h5>\2</h5>', tmp)
-	tmp = re.sub(r"""(#{4}) ([\w!@#$%^&*()_\-{}[\]:";'<>?,./|\\=+]*)""", r'<h4>\2</h4>', tmp)
-	tmp = re.sub(r"""(#{3}) ([\w!@#$%^&*()_\-{}[\]:";'<>?,./|\\=+]*)""", r'<h3>\2</h3>', tmp)
-	tmp = re.sub(r"""(#{2}) ([\w!@#$%^&*()_\-{}[\]:";'<>?,./|\\=+]*)""", r'<h2>\2</h2>', tmp)
-	tmp = re.sub(r"""(#{1}) ([\w!@#$%^&*()_\-{}[\]:";'<>?,./|\\=+]*)""", r'<h1>\2</h1>', tmp)
-	tmp = re.sub(r"""(`{3})([\w\n!@#$%^&*()_\-{}[\]:";'<>?,./|\\=+]*)(`{3})""", r'<pre><code>\2</pre></code>', tmp)
-	tmp = re.sub(r"""(`{1})([\w\n!@#$%^&*()_\-{}[\]:";'<>?,./|\\=+]*)(`{1})""", r'<code>\2</code>', tmp)
+	tmp = re.sub(r"""(#{6}) ([\w!@#$%^&*()_\-{ }[\]:";'<>?,./|\\=+]*)""", r'<h6>\2</h6>', sentence)
+	tmp = re.sub(r"""(#{5}) ([\w!@#$%^&*()_\-{ }[\]:";'<>?,./|\\=+]*)""", r'<h5>\2</h5>', tmp)
+	tmp = re.sub(r"""(#{4}) ([\w!@#$%^&*()_\-{ }[\]:";'<>?,./|\\=+]*)""", r'<h4>\2</h4>', tmp)
+	tmp = re.sub(r"""(#{3}) ([\w!@#$%^&*()_\-{ }[\]:";'<>?,./|\\=+]*)""", r'<h3>\2</h3>', tmp)
+	tmp = re.sub(r"""(#{2}) ([\w!@#$%^&*()_\-{ }[\]:";'<>?,./|\\=+]*)""", r'<h2>\2</h2>', tmp)
+	tmp = re.sub(r"""(#{1}) ([\w!@#$%^&*()_\-{ }[\]:";'<>?,./|\\=+]*)""", r'<h1>\2</h1>', tmp)
+	tmp = re.sub(r"""(`{3})([\w\n!@#$%^&*()_\-{ }[\]:";'<>?,./|\\=+]*)(`{3})""", r'<pre><code>\2</pre></code>', tmp)
+	tmp = re.sub(r"""(`{1})([\w\n!@#$%^&*()_\-{ }[\]:";'<>?,./|\\=+]*)(`{1})""", r'<code>\2</code>', tmp)
 	html_file.append('<p>%s</p>' %tmp)
 
 HTML = HTML %(''.join(html_file))
