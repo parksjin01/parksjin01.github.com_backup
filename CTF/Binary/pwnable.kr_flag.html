@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Damotorie's World</title>
+    <link href="../../CSS/bootstrap.css" rel="stylesheet">
+    <link href="../../CSS/bootstrap-theme.css" rel="stylesheet">
+    <script src="../../JS/bootstrap.js" type="text/javascript">
+    <script src="../../JS/npm.js" type="text/javascript">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101495030-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="../../index.html">Damotorie CTF's</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="../../Binary.html">Binary</a></li>
+                <li><a href="../../Reversing.html">Reversing</a></li>
+                <li><a href="../../ETC.html">ETC</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+<br>
+<br>
+<br>
+<div class="container col-md-offset-2 col-md-8">
+    <div><p><h2>flag1</h2></p><p>Pwnable.kr 문제를 다시풀어보고 한국어로 writeup을 써보는 4번째 시간입니다. 하루 쉬고 돌아왔네요. 계속 reversing 만을 잡고 있으니까 머리터질것 같아서 하루 쉬고 왔어요 ㅎㅎ. 이제 다시 힘내서 풀어보도록 하겠습니다. </p><p>먼저 문제에 이 문제를 풀기위해서는 리버싱만을 쓰면 된다고 나와있으니 리버싱에 중점을 두고 풀어보도록 하겠습니다. 먼저 다운로드를 하고 <code>strings</code> 명령어를 쓰면 눈을 잡는 문자열을 만날 수 있습니다. </br>
+<pre><code>
+$Info: This file is packed with the UPX executable packer http://upx.sf.net $
+$Id: UPX 3.08 Copyright (C) 1996-2011 the UPX Team. All Rights Reserved. $
+</code></pre>
+여기서 이 파일은 <code>UPX</code>로 팩킹 되어있다고 되어 있습니다. 팩킹되어있다면 풀어봐야겠죠? 바로 <code>UPX</code>를 설치해보도록 하겠습니다. </br>
+<pre><code>
+sudo apt-get install upx
+</code></pre>
+그렇게 되면 <code>UPX</code> 팩킹을 언팩할 수 있습니다. <code>upx -d flag</code>로 언팩시켜봅니다.</p><p>그러면 파일이 약 800kb로 늘어나서 문제를 좀더 쉽게 풀기위해서 IDA 같은 디버거를 써보겠습니다. 저는 IDA가 아닌 <code>Hopper Disassembler</code>를 사용했으므로 좀 다를수도 있습니다.</br>
+<pre><code>
+0000000000401180         mov        qword [rbp+var_8], rax
+0000000000401184         mov        rdx, qword [flag]                           ; argument #3 for method sub_400320
+000000000040118b         mov        rax, qword [rbp+var_8]
+000000000040118f         mov        rsi, rdx                                    ; argument #2 for method sub_400320
+0000000000401192         mov        rdi, rax                                    ; argument #1 for method sub_400320
+0000000000401195         call       sub_400320
+</code></pre> 에서 <code>mov        rdx, qword [flag]</code>라는 수상쩍은 명령어가 보입니다. <code>flag</code>의 주소값은 <code>0x6c2070</code>입니다. 따라서 <code>0x6c2070</code>의 문자열을 찾으면 그게 플레그입니다.</p><p>틀린부분이나 문제가 있다면 메일을 보내주세요.
+</p></div>
+</div>
+</body>
+</html>
