@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Damotorie's World</title>
+    <link href="../../CSS/bootstrap.css" rel="stylesheet">
+    <link href="../../CSS/bootstrap-theme.css" rel="stylesheet">
+    <script src="../../JS/bootstrap.js" type="text/javascript">
+    <script src="../../JS/npm.js" type="text/javascript">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-101495030-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="../../index.html">Damotorie CTF's</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="../../Binary.html">Binary</a></li>
+                <li><a href="../../Reversing.html">Reversing</a></li>
+                <li><a href="../../ETC.html">ETC</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+<br>
+<br>
+<br>
+<div class="container col-md-offset-2 col-md-8">
+    <div><p><h2>Goversing-Codegate</h2></p><p>요즘 pwnable.kr 문제를 3개씩 다시 풀어서 writeup을 올리다 보니 다른 ctf의 writeup을 올리는 속도가 조금 떨어진것 아닌가 싶네요. 이 문제도 거의 3일 생각해서 겨우 풀 정도니 조금 게을러진 것같아서 걱정이네요 ㅜㅜ. 이문제도 진짜 어렵다고 생각했는데 Codegate 본선은 어떤 괴물같은 문제로 도배되어있을지 상상하기도 힘드네요. 물론 이 문제도 예선중에서는 어려운 편에 속하는것 같습니다. 그런데 온전히 제힘으로 못풀었다는 사실이 슬프네요. 그럼 문제를 풀어보도록 하겠습니다.</p><p>먼저 Go로 짜여진 프로그램인데요, 저는 GO로 만들어진 프로그램을 리버싱하는 것은 이번이 처음이라서 조금 어렵다고 생각했습니다. 64비트 프로그램인데도 불구하고 스택을 이용해서 함수 매개변수를 넘기는 점등에서 다른 언어와 조금 차이가 있다는 생각을 했습니다. 먼저 메뉴쪽을 보면 1번은 로그인, 2번은 플레그 출력인것을 알 수 있는데요, 2번을 살펴보도록 하겠습니다. 2번 함수에서 <code>id_pw_check</code> 라는 함수를 부르는데 이함수의 리턴값이 0이면 플레그가 출력되지 않고 1이면 플레그가 출력됩니다. 그렇다면 <code>id_pw_check</code>함수를 보도록 하겠습니다. 이 함수가 0을 리턴할지 아니면 1을 리턴할지 정하는 부분은 바로 <code>0x00402186</code>인데요, <code>$rax</code>를 <code>0xffffffff</code>과 비교해서 같으면 0을 다르면 1을 반환합니다. 그러니 저희의 목표는 <code>$rax</code>가 <code>0xffffffff</code>이 되지 않도록 하는 것입니다. <code>$rax</code>가 -1이 되는 경우는 크게 2가지 입니다. 먼저 id를 체크해보고 다음에는 id와 pw를 같이 체크합니다.</p><p>제가 어렵다고 생각한 부분이 바로 id를 체크하는 부분이었는데요, id를 2진수로 바꾸고 비트 연산을 통해서 특정한 값을 만들어서 그값을 비교하는 것까지는 찾았는데 정확한 연산 방법을 알아내는데 실패했습니다... 흑 저 연산 찾으려고 2일 가량 썼는데 결국 모르겠더군요, 그래서 다른 분들의 writeup을 보고 id는 그냥 넘기기로 했습니다. 사실 이문제가 어려운 이유는 id를 찾는 것이 힘들어서라고 생각했기 때문에 지금 이렇게 writeup을 쓰고 있어도 문제를 풀었다는 느낌이 들지는 않아요. 쨌든 아이디는 다른 분 writeup을 보고 <code>Admin@G0</code>라는 것을 알았습니다. 이제는 pw를 찾을 시간입니다.</p><p>pw의 경우 id와 xor한 값을 비교해서 값들이 전부 일치한다면 통과할 수 있습니다. 이부분을 C언어로 다시 바꿔본다면 다음과 같습니다.
+<pre><code>
+int check(user_input)
+{
+	char key[27]={0x12, 0x56, 0x2e, 0x1b, 0x5c, 0x34, 0x6a, 0x5d, 0x73, 0x29, 0xf, 0x5b, 0x1c, 0x67, 0x34, 0x6f, 0x11, 0x50, 0x1e, 0x3a, 0x19, 0x70, 0x35, 0x54, 0x3f, 0x45, 0x2d, 0x47, 0x2e};
+	char password[]="Here is password we have to find";
+	
+	for(int i=0; i<27; i++)
+	{
+		if((int(password[i])^int(user_input[i%strlen(user_input)])) != key[i])
+			return -1;
+	}
+	return 0;
+}
+</code></pre>
+저는 조금 소스를 쉽게 짜기위해서 이게 함수라고 가정하고 짰으나 로직은 똑같습니다. 결국 사용자 id와 pw를 xor 시켜서 원하는 값들이 나오면 성공적으로 로그인이 되는 것입니다. 이를 찾기 위한 파이썬 스크립트가 아래와 같습니다.
+<pre><code>
+xor = [0x12, 0x56, 0x2e, 0x1b, 0x5c, 0x34, 0x6a, 0x5d, 0x73, 0x29, 0xf, 0x5b, 0x1c, 0x67, 0x34, 0x6f, 0x11, 0x50, 0x1e, 0x3a, 0x19, 0x70, 0x35, 0x54, 0x3f, 0x45, 0x2d, 0x47, 0x2e, ]
+id = 'Admin@G0'
+pw = ''
+for idx in range(len(xor)):
+    pw += chr(xor[idx]^ord(id[idx%len(id)]))
+print pw
+</code></pre>
+이제 id와 pw를 모두 알았으므로 로그인해서 2번을 누르기만 하면 됩니다. 으 이번에는 제가 id 찾는 부분을 제대로 분석하지 못해서 조금 많이 찝찝하네요.</p><p>혹시 모르시는 부분이나 틀린부분이 있다면 메일을 보내주세요 
+</p></div>
+</div>
+</body>
+</html>
